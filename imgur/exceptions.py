@@ -1,10 +1,13 @@
 class ImgurBaseException(Exception):
-    pass
+    '''Base imgur exception'''
+
 
 class ImgurClientError(ImgurBaseException):
-    pass
+    '''An error occurred with the client'''
+
 
 class ImgurRateLimitExceeded(ImgurClientError):
+    '''Monthly/daily quota exceeded'''
     def __init__(self, message, headers):
         self.message = message
         self.user_limit = headers['X-RateLimit-UserLimit']
@@ -19,3 +22,7 @@ class ImgurRateLimitExceeded(ImgurClientError):
 
     def __str__(self):
         return self.message
+
+
+class ImgurUploadError(ImgurClientError):
+    '''An error occurred during the upload of a video or image'''
