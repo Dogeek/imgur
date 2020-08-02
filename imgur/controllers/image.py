@@ -31,7 +31,7 @@ class ImageController(Controller):
         if album is not None:
             payload.update(album=album)
         if type is None:
-            payload.update(type=detect_type(image or video))
+            payload.update(type=detect_type(image or video).value)
         else:
             payload.update(type=type)
         if name is None:
