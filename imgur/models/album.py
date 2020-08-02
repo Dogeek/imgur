@@ -27,12 +27,12 @@ class Album(Model):
         self.in_gallery = False
 
     def images(self):
-        data = self.get(f'/3/album/{self.deletehash}/images').json()['data']
-        return [Image(self.session, baseurl=self.baseurl, data=d) for d in data]
+        data = self.session.get(f'/3/album/{self.deletehash}/images').json()['data']
+        return [Image(self.session, data=d) for d in data]
 
     def image(self, image_hash):
-        data = self.get(f'/3/album/{self.deletehash}/image/{image_hash}').json()['data']
-        return Image(self.session, baseurl=self.baseurl, data=data)
+        data = self.session.get(f'/3/album/{self.deletehash}/image/{image_hash}').json()['data']
+        return Image(self.session, data=data)
 
     def update(self, ids=None, deletehashes=None, title=None, description=None, privacy=None, cover=None):
         payload = {}
@@ -54,22 +54,22 @@ class Album(Model):
             payload.update(privacy=privacy)
         if cover is not None:
             payload.update(cover=cover)
-        data = self.put(f'/3/album/{self.deletehash}', data=payload).json()
+        data = self.session.put(f'/3/album/{self.deletehash}', data=payload).json()
         return data['data']
 
     def delete(self):
-        return super().delete(f'/3/album/{self.deletehash}').json()['data']
+        return self.session.delete(f'/3/album/{self.deletehash}').json()['data']
 
     def favorite(self):
-        return self.post(f'/3/album/{self.deletehash}/favorite').json()['data']
+        return self.session.post(f'/3/album/{self.deletehash}/favorite').json()['data']
 
     def add(self, *image_hashes):
         key = 'ids'
         if self.is_authed:
             key = 'deletehashes'
         payload = {key: ','.join(image_hashes)}
-        return self.post(f'/3/album/{self.deletehash}/add', data=payload).json()['data']
+        return self.session.post(f'/3/album/{self.deletehash}/add', data=payload).json()['data']
 
     def remove(self, *image_hashes):
         payload = {'ids': ','.join(image_hashes)}
-        return self.post(f'/3/album/{self.deletehash}/remove_images', data=payload).json()['data']
+        return self.session.post(f'/3/album/{self.deletehash}/remove_images', data=payload).json()['data']

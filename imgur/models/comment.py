@@ -21,11 +21,11 @@ class Comment(Model):
         self.children = []
 
     def delete(self):
-        return super().delete(f'/3/comment/{self.id}').json()['data']
+        return self.session.delete(f'/3/comment/{self.id}').json()['data']
 
     def replies(self):
-        data = self.get(f'/3/comment/{self.id}/replies').json()['data']
-        return [Comment(self.session, baseurl=self.baseurl, data=d) for d in data]
+        data = self.session.get(f'/3/comment/{self.id}/replies').json()['data']
+        return [Comment(self.session, data=d) for d in data]
 
     def reply(self, comment):
         payload = {
@@ -33,10 +33,10 @@ class Comment(Model):
             'comment': comment,
         }
 
-        return self.post(f'/3/comment/{self.id}', data=payload).json()['data']
+        return self.session.post(f'/3/comment/{self.id}', data=payload).json()['data']
 
     def vote(self, vote):
-        return self.post(f'/3/comment/{self.id}/vote/{vote}').json()['data']
+        return self.session.post(f'/3/comment/{self.id}/vote/{vote}').json()['data']
 
     def upvote(self):
         return self.vote(self.id, 'up')
@@ -53,4 +53,4 @@ class Comment(Model):
         if isinstance(reason, ReportReason):
             reason = ReportReason.value
         payload = dict(reason=reason)
-        return self.post(f'/3/comment/{self.id}/report', data=payload).json()['data']
+        return self.session.post(f'/3/comment/{self.id}/report', data=payload).json()['data']

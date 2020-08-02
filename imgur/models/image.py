@@ -30,7 +30,7 @@ class Image(Model):
         self.in_gallery = False
 
     def delete(self):
-        return super().delete(f'/3/image/{self.deletehash}').json()['data']
+        return self.session.delete(f'/3/image/{self.deletehash}').json()['data']
 
     def update(self, title=None, description=None):
         payload = {}
@@ -39,7 +39,7 @@ class Image(Model):
         if description is None:
             payload.update(description=description)
 
-        return self.post(f'/3/image/{self.deletehash}', data=payload).json()['data']
+        return self.session.post(f'/3/image/{self.deletehash}', data=payload).json()['data']
 
     def favorite(self):
-        return self.post(f'/3/image/{self.deletehash}/favorite').json()['data']
+        return self.session.post(f'/3/image/{self.deletehash}/favorite').json()['data']

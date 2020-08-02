@@ -7,16 +7,16 @@ from imgur.exceptions import ImgurClientError
 
 class AlbumController(Controller):
     def album(self, hash):
-        data = self.get(f'/3/album/{hash}').json()['data']
-        return Album(self.session, baseurl=self.baseurl, data=data)
+        data = self.session.get(f'/3/album/{hash}').json()['data']
+        return Album(self.session, data=data)
 
     def images(self, hash):
-        data = self.get(f'/3/album/{hash}/images').json()['data']
-        return [Image(self.session, baseurl=self.baseurl, data=d) for d in data]
+        data = self.session.get(f'/3/album/{hash}/images').json()['data']
+        return [Image(self.session, data=d) for d in data]
 
     def image(self, album_hash, image_hash):
-        data = self.get(f'/3/album/{album_hash}/image/{image_hash}').json()['data']
-        return Image(self.session, baseurl=self.baseurl, data=data)
+        data = self.session.get(f'/3/album/{album_hash}/image/{image_hash}').json()['data']
+        return Image(self.session, data=data)
 
     def create(self, ids=None, deletehashes=None, title=None, description=None, privacy=None, cover=None):
         payload = {}
@@ -32,8 +32,8 @@ class AlbumController(Controller):
             payload.update(privacy=privacy)
         if cover is not None:
             payload.update(cover=cover)
-        data = self.post('/2/album', data=payload).json()['data']
-        return Album(self.session, baseurl=self.baseurl, data=data)
+        data = self.session.post('/2/album', data=payload).json()['data']
+        return Album(self.session, data=data)
 
     def update(self, hash, ids=None, deletehashes=None, title=None, description=None, privacy=None, cover=None):
         payload = {}
@@ -55,22 +55,22 @@ class AlbumController(Controller):
             payload.update(privacy=privacy)
         if cover is not None:
             payload.update(cover=cover)
-        data = self.put(f'/3/album/{hash}', data=payload).json()
+        data = self.session.put(f'/3/album/{hash}', data=payload).json()
         return data['data']
 
     def delete(self, hash):
-        return super().delete(f'/3/album/{hash}').json()['data']
+        return self.session.delete(f'/3/album/{hash}').json()['data']
 
     def favorite(self, hash):
-        return self.post(f'/3/album/{hash}/favorite').json()['data']
+        return self.session.post(f'/3/album/{hash}/favorite').json()['data']
 
     def add(self, album_hash, *image_hashes):
         key = 'ids'
         if self.is_authed:
             key = 'deletehashes'
         payload = {key: ','.join(image_hashes)}
-        return self.post(f'/3/album/{album_hash}/add', data=payload).json()['data']
+        return self.session.post(f'/3/album/{album_hash}/add', data=payload).json()['data']
 
     def remove(self, album_hash, *image_hashes):
         payload = {'ids': ','.join(image_hashes)}
-        return self.post(f'/3/album/{album_hash}/remove_images', data=payload).json()['data']
+        return self.session.post(f'/3/album/{album_hash}/remove_images', data=payload).json()['data']
