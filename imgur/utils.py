@@ -7,7 +7,7 @@ import time
 from requests import Session
 
 from imgur.enums import UploadType
-from imgur.exceptions import ImgurRateLimitExceeded
+from imgur.exceptions import ImgurRateLimitExceeded, ImgurNotAuthenticated
 
 
 def detect_type(img_or_vid):
@@ -24,7 +24,14 @@ def get_version(version):
     return '.'.join(str(v) for v in version)
 
 class ImgurSession(Session):
+    '''
+    A session to make requests to imgur. Inherits from requests.Session.
+    '''
     def __init__(self, baseurl, *args, **kwargs):
+        '''
+        :params baseurl: the base url to use for API calls. It should be
+                         'https://api.imgur.com/' unless the app is commercial.
+        '''
         super().__init__(*args, **kwargs)
         self.baseurl = baseurl
         self.last_response_headers = {}
@@ -32,6 +39,21 @@ class ImgurSession(Session):
         self.response_cache = {}
 
     def request(self, method, endpoint, **kwargs):
+        '''
+        Performs a request to imgur. Handles the ETag specification, rate limits
+        and deprecations from imgur.
+
+        :param method: The method of the request (GET, POST, PUT, DELETE)
+        :type method: str
+        :param endpoint: The endpoint to request, will be joined to the base url.
+        :type endpoint: str
+
+        :returns: response from the server
+        :rtype: requests.Response
+        '''
+        if 'headers' not in kwargs:
+            kwargs['headers'] = {}
+
         etag = self.etags.get(endpoint)
         if etag:
             kwargs['headers'].update({'If-None-Match': etag})
@@ -69,3 +91,11 @@ class ImgurSession(Session):
     @property
     def is_authed(self):
         return 'Bearer' in self.session.headers['Authorization']
+
+
+def auth_required(func):
+    def decorated(self, *args, **kwargs):
+        if self.session.is_authed:
+            return func(self, *args, **kwargs)
+        raise ImgurNotAuthenticated(f'You must be authenticated to call {func.__name__}')
+    return decorated
