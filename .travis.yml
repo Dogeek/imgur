@@ -1,0 +1,37 @@
+language: python
+
+python:
+  - "3.6.5"
+  - "3.7"
+  - "3.8"
+
+before_install:
+  - pip install requests
+  - sleep 3
+
+install:
+  - python -m pip install -r requirements.txt
+  - python -m pip install -r requirements-docs.txt
+  - python -m pip install nose coverage codecov
+
+jobs:
+  include:
+    - stage: test
+      script: python -m unittests tests/
+
+    - stage: build
+      script: python setup.py build
+
+    - stage: build-docs
+      script: cd docs && make
+
+stages:
+  - test
+  - name: build
+    if: branch = master
+  - name: build-docs
+    if: branch = master
+
+after_success:
+  - coverage run nosetests
+  - codecov

@@ -36,8 +36,10 @@ setup(
     ],
     packages=find_packages(),
     install_requires=requirements,
-    license='MIT License',
+    license='MIT',
     zip_safe=True,
     platforms='any',
     python_requires='>=3.7',
+    package_data={'': ['*.pem']},
+    download_url='https://github.com/dogeek/imgur/releases',
 )
