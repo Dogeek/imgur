@@ -1,5 +1,5 @@
 from imgur.models.base import Model
-from imgur.enums import ReportReason
+from imgur.enums import ReportReason, Vote
 
 
 class Comment(Model):
@@ -38,16 +38,18 @@ class Comment(Model):
         return self.session.post(f'/3/comment/{self.id}', data=payload).json()['data']
 
     def vote(self, vote):
+        if isinstance(vote, Vote):
+            vote = vote.value
         return self.session.post(f'/3/comment/{self.id}/vote/{vote}').json()['data']
 
     def upvote(self):
-        return self.vote(self.id, 'up')
+        return self.vote(self.id, Vote.UP)
 
     def downvote(self):
-        return self.vote(self.id, 'down')
+        return self.vote(self.id, Vote.DOWN)
 
     def veto(self):
-        return self.vote(self.id, 'veto')
+        return self.vote(self.id, Vote.VETO)
 
     def report(self, reason):
         if isinstance(reason, str):
