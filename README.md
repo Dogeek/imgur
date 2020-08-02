@@ -36,4 +36,3 @@ image.delete()
 - [ ] Implement exceptions
 - [ ] Implement the Account model(s) and its controller(s)
 - [ ] write documentation
-- [ ] add models.image.Image.add_to_album() convenience method.
