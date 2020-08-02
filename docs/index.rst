@@ -18,3 +18,51 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+imgur
+=====
+
+.. autoclass:: imgur.Imgur
+   :members:
+
+Controllers
+===========
+.. automodule:: imgur.controllers.album
+   :members:
+.. automodule:: imgur.controllers.image
+   :members:
+.. automodule:: imgur.controllers.comment
+   :members:
+
+Models
+======
+.. automodule:: imgur.models.album
+   :members:
+.. automodule:: imgur.models.image
+   :members:
+.. automodule:: imgur.models.comment
+   :members:
+
+Exceptions
+==========
+
+.. automodule:: imgur.exceptions
+   :members:
+
+Enums
+=====
+
+.. automodule:: imgur.enums
+   :members:
+
+Utils
+=====
+
+.. automodule:: imgur.utils
+   :members:
+
+HTTP Server
+===========
+
+.. automodule:: imgur.http_server
+   :members:
