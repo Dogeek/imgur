@@ -12,16 +12,31 @@ import time
 import requests
 
 from imgur.http_server import HandlerInterrupt, RequestHandler
+
 from imgur.controllers.image import ImageController
 from imgur.controllers.album import AlbumController
+from imgur.controllers.comment import CommentController
+
 from imgur.exceptions import ImgurClientError
 from imgur.utils import ImgurSession
 
 
 class Imgur:
+    '''
+    Imgur client class. It's the entry point to imgur's API
+    '''
     def __init__(self, client_id=None, client_secret=None,
                  access_token=None, refresh_token=None,
                  mashape_key=None, config_file=None, expires_at=1):
+        '''
+        :param client_id: Imgur client id
+        :param client_secret: Imgur client secret
+        :param access_token: Imgur access token (can be omitted)
+        :param refresh_token: Imgur refresh token (can be omitted)
+        :param mashape_key: Key to authenticate commercial imgur apps (can be omitted)
+        :param config_file: path to a config file containing the other params
+        :param expires_at: Timestamp when the access_token expires
+        '''
         params = {
             'client_id': client_id,
             'client_secret': client_secret,
@@ -56,10 +71,16 @@ class Imgur:
         self.refresh_token = refresh_token
         self.expires_at = expires_at
         self.baseurl = 'https://api.imgur.com'
+        '''Imgur base url. For non commercial apps, this is https://api.imgur.com
+        , and 'https://imgur-apiv3.p.rapidapi.com otherwise. A commercial app
+        should have a mashape key to authenticate itself, and this is how this library
+        determines which baseurl to choose.'''
 
-        self.session = ImgurSession(self.baseurl)
+        self.session = ImgurSession(self)
+        '''Instance of imgur.utils.ImgurSession, which handles all the requests
+        to imgur's API'''
         if mashape_key:
-            self.baseurl = 'https://imgur-apiv3.p.rapidapi.com/'
+            self.baseurl = 'https://imgur-apiv3.p.rapidapi.com'
             self.session.headers['X-Mashape-Key'] = mashape_key
         self.session.headers['Authorization'] = f'Client-ID {client_id}'
 
@@ -67,12 +88,23 @@ class Imgur:
         handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(formatter)
         self.logger = logging.Logger('imgur')
+        '''logger instance which will log everything to sys.stdout'''
         self.logger.addHandler(handler)
 
         self.image = ImageController(self.session)
+        '''image controller, to handle imgur images'''
         self.album = AlbumController(self.session)
+        '''album controller to handle imgur albums'''
+        self.comment = CommentController(self.session)
+        '''comment controller, to handle imgur comments'''
 
-    def _save_config(self, path=None):
+    def save_config(self, path=None):
+        '''
+        Saves the current imgur config to $path
+
+        :param path: path to save the config to, the config will be serialized
+                     into a json file, loadable by this imgur client
+        '''
         path = path or self.config_file
         if path is None:
             return
@@ -123,7 +155,7 @@ class Imgur:
         finally:
             server.shutdown()
             self.logger.info('Shutting down webserver...')
-        self._save_config()
+        self.save_config()
 
     def authenticate(self):
         '''
