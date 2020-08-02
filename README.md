@@ -1,5 +1,5 @@
 # Imgur - A python wrapper around imgur's API
-^^because imgurpython has been deprecated
+> because imgurpython has been deprecated
 
 ## Installation
 
