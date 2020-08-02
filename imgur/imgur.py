@@ -87,6 +87,12 @@ class Imgur:
             json.dump(data, f, indent=4)
 
     def authorize(self):
+        '''
+        Authorizes the current application for the logged-in user.
+
+        Runs a webserver to capture the access and refresh tokens, and opens
+        the browser to the authorization URI.
+        '''
         payload = {
             'client_id': self.client_id,
             'response_type': 'token',
@@ -120,6 +126,11 @@ class Imgur:
         self._save_config()
 
     def authenticate(self):
+        '''
+        Authenticates the app to imgur. Sets the session's Authorization headers to
+        the access token if it is still valid. If it is not, creates a new access_token
+        from the refresh token.
+        '''
         if time.time() < self.expires_at and self.access_token:
             self.session.headers['Authorization'] = f'Bearer {self.access_token}'
             return self.access_token

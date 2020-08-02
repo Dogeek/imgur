@@ -6,6 +6,10 @@ class ImgurClientError(ImgurBaseException):
     '''An error occurred with the client'''
 
 
+class ImgurServerError(ImgurBaseException):
+    '''An error occured on imgur's side'''
+
+
 class ImgurRateLimitExceeded(ImgurClientError):
     '''Monthly/daily quota exceeded'''
     def __init__(self, message, headers):
@@ -26,3 +30,10 @@ class ImgurRateLimitExceeded(ImgurClientError):
 
 class ImgurUploadError(ImgurClientError):
     '''An error occurred during the upload of a video or image'''
+
+
+class ImgurNotAuthenticated(ImgurClientError):
+    '''
+    Exception that occurs when a method
+    call must be authenticated using a Bearer token
+    '''
