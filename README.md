@@ -32,10 +32,8 @@ image.delete()
 
 ## TODO
 
-- [ ] Allow imgur client to get its config from a JSON file
 - [ ] Implement the Gallery model and its controller
 - [ ] Implement exceptions
-- [ ] Handle Imgur's rate-limiting
 - [ ] Implement the Account model(s) and its controller(s)
 - [ ] write documentation
 - [ ] add models.image.Image.add_to_album() convenience method.
