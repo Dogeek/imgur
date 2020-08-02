@@ -4,7 +4,8 @@ from imgur.models.base import Model
 
 
 class Image(Model):
-    def init(self):
+    '''Represents a single Imgur image'''
+    def __init__(self, session, data=None):
         self.id = ''
         self.title = ''
         self.description = ''
@@ -28,6 +29,7 @@ class Image(Model):
         self.nsfw = None
         self.vote = ''
         self.in_gallery = False
+        super().__init__(session, data)
 
     def delete(self):
         return self.session.delete(f'/3/image/{self.deletehash}').json()['data']

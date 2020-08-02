@@ -3,7 +3,8 @@ from imgur.enums import AlbumPrivacy, AlbumLayout
 
 
 class Album(Model):
-    def init(self):
+    '''Represents an imgur album'''
+    def __init__(self, session, data=None):
         self.id = ''
         self.title = ''
         self.description = ''
@@ -25,6 +26,7 @@ class Album(Model):
         self.images_count = 0
         self.images = []
         self.in_gallery = False
+        super().__init__(session, data)
 
     def images(self):
         data = self.session.get(f'/3/album/{self.deletehash}/images').json()['data']

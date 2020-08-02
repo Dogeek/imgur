@@ -3,7 +3,8 @@ from imgur.enums import ReportReason
 
 
 class Comment(Model):
-    def init(self):
+    '''Represents a single comment on an image, gallery or album'''
+    def __init__(self, session, data=None):
         self.id = 0
         self.image_id = ''
         self.comment = ''
@@ -19,6 +20,7 @@ class Comment(Model):
         self.deleted = False
         self.vote = None
         self.children = []
+        super().__init__(session, data)
 
     def delete(self):
         return self.session.delete(f'/3/comment/{self.id}').json()['data']
