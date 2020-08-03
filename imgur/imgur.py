@@ -124,6 +124,11 @@ class Imgur:
 
         Runs a webserver to capture the access and refresh tokens, and opens
         the browser to the authorization URI.
+
+        :param host: The hostname, as a tuple, defaults to ('127.0.0.1', 8080)
+        :type host: tuple
+        :param ssl: Whether to wrap the socket in an SSL layer, defaults to True
+        :type ssl: bool
         '''
         if host is None:
             host = ('127.0.0.1', 8080)
