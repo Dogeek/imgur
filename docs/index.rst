@@ -42,6 +42,12 @@ Models
    :members:
 .. automodule:: imgur.models.comment
    :members:
+.. automodule:: imgur.models.gallery
+   :members:
+.. automodule:: imgur.models.ads
+   :members:
+.. automodule:: imgur.models.account
+   :members:
 
 Exceptions
 ==========
