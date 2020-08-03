@@ -3,6 +3,8 @@ from urllib.parse import urljoin
 from http import HTTPStatus
 import warnings
 import time
+import json
+import enum
 
 from requests import Session
 
@@ -38,6 +40,39 @@ def get_version(version):
         return version
     return '.'.join(str(v) for v in version)
 
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, enum.Enum):
+            obj = obj.value
+        return json.JSONEncoder.default(self, obj)
+
+
+class JSON:
+    encoder = JSONEncoder()
+    decoder = json._default_decoder
+
+    def dumps(self, obj, *, **kwargs):
+        if 'indent' not in kwargs:
+            kwargs['indent'] = 4
+        kwargs['cls'] = self.encoder
+        return json.dumps(obj, **kwargs)
+
+    def dump(self, obj, fp, *, **kwargs):
+        if 'indent' not in kwargs:
+            kwargs['indent'] = 4
+        kwargs['cls'] = self.encoder
+        return json.dump(obj, fp, **kwargs)
+
+    def loads(self, s, *, **kwargs):
+        kwargs['cls'] = self.decoder
+        return json.loads(s, **kwargs)
+
+    def load(self, fp, *, **kwargs):
+        kwargs['cls'] = self.decoder
+        return json.load(fp, **kwargs)
+
+
 class ImgurSession(Session):
     '''
     A session to make requests to imgur. Inherits from requests.Session.
@@ -50,6 +85,7 @@ class ImgurSession(Session):
         super().__init__(*args, **kwargs)
         self.baseurl = client.baseurl
         self.client = client
+        self.json = JSON()
 
         self.last_response_headers = {}
         self.etags = {}
