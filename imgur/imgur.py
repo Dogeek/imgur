@@ -118,26 +118,29 @@ class Imgur:
         with open(path, 'w') as f:
             json.dump(data, f, indent=4)
 
-    def authorize(self):
+    def authorize(self, host=None, ssl=True):
         '''
         Authorizes the current application for the logged-in user.
 
         Runs a webserver to capture the access and refresh tokens, and opens
         the browser to the authorization URI.
         '''
+        if host is None:
+            host = ('127.0.0.1', 8080)
         payload = {
             'client_id': self.client_id,
             'response_type': 'token',
             'state': ''
         }
         certfile = os.path.join(os.path.dirname(__file__), 'server.pem')
-        host, port = '127.0.0.1', 8080
+        host, port = host
         server = HTTPServer((host, port), RequestHandler)
-        server.socket = ssl.wrap_socket(
-            server.socket,
-            certfile=certfile,
-            server_side=True
-        )
+        if ssl:
+            server.socket = ssl.wrap_socket(
+                server.socket,
+                certfile=certfile,
+                server_side=True
+            )
         self.logger.info('Opening auth URL in the browser...')
         webbrowser.open(
             'https://api.imgur.com/oauth2/authorize?' + urlencode(payload)
